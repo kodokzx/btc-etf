@@ -98,3 +98,44 @@ old["candles"] = sorted(cd, key=lambda c: c["date"])
 json.dump(old, open(JS,"w"), indent=1)
 
 print(f"Added {len(added)} day(s): {', '.join(added)}")
+
+# --- 4. refresh 90D/1Y/ALL summary ---
+def summarize(sel, label):
+    ib = [flows[d]["IBIT"] for d in sel if flows[d]["IBIT"] is not None]
+    tot = [flows[d]["Total"] for d in sel if flows[d]["Total"] is not None]
+    cdates = sorted(candles)
+    first_c = datetime.datetime.strptime(sel[0], "%d %b %Y").strftime("%Y-%m-%d")
+    last_c = datetime.datetime.strptime(sel[-1], "%d %b %Y").strftime("%Y-%m-%d")
+    cw = [candles[c] for c in cdates if first_c <= c <= last_c]
+    chg = (cw[-1]["close"] / cw[0]["open"] - 1) * 100 if cw else 0
+    return ({"label": label, "trading_days": len(sel),
+             "ibit_total_M": round(sum(ib), 1), "all_etf_total_M": round(sum(tot), 1),
+             "btc_change_pct": round(chg, 1), "btc_start": cw[0]["open"], "btc_end": cw[-1]["close"],
+             "best_day": max(sel, key=lambda d: flows[d]["IBIT"] or -9e9),
+             "worst_day": min(sel, key=lambda d: flows[d]["IBIT"] or 9e9)})
+
+ds_all = sorted(flows, key=lambda x: datetime.datetime.strptime(x, "%d %b %Y"))
+periods = {"90D": summarize(ds_all[-90:], "last 90 trading days"),
+           "1Y": summarize(ds_all[-260:], "last 260 trading days"),
+           "ALL": summarize(ds_all, "since 11 Jan 2024")}
+
+def fmt_period(key):
+    s = periods[key]
+    sign = "+" if s["ibit_total_M"] >= 0 else ""
+    sign_a = "+" if s["all_etf_total_M"] >= 0 else ""
+    return "\n".join([
+        f"## {key} — {s['label']}", "",
+        f"- Hari perdagangan: {s['trading_days']}",
+        f"- IBIT net flow: **{sign}${s['ibit_total_M']/1000:.2f} miliar**",
+        f"- Semua ETF BTC net flow: **{sign_a}${s['all_etf_total_M']/1000:.2f} miliar**",
+        f"- Pergerakan BTC: ${s['btc_start']:,.0f} → ${s['btc_end']:,.0f} ({s['btc_change_pct']:+.1f}%)",
+        f"- Hari terbaik IBIT: {s['best_day']} (+${flows[s['best_day']]['IBIT']:.1f} jt)",
+        f"- Hari terburuk IBIT: {s['worst_day']} (${flows[s['worst_day']]['IBIT']:.1f} jt)", ""])
+
+summary_md = "\n".join([
+    "# Ringkasan Periodik — BTC ETF Flow (dari dataset lengkap)", "",
+    f"Diperbarui: {datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')} · Sumber: Farside + Binance · Append-only dari dataset utama.", "",
+    fmt_period("90D"), fmt_period("1Y"), fmt_period("ALL"),
+    "---", "Catatan: angka diperbarui otomatis oleh cron harian."])
+open(os.path.join(REPO, "ringkasan-90d-1y-all.md"), "w").write(summary_md)
+print("Summary refreshed.")
