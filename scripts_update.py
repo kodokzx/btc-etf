@@ -16,7 +16,9 @@ r = sh(["curl","-s","-L","--max-time","90",
 if r.returncode != 0 or len(r.stdout) < 5000:
     print(f"WARN: flow fetch failed ({r.returncode}, {len(r.stdout)}b)"); sys.exit(1)
 
-# rows are markdown pipes: | 11 Jan 2024 | 111.7 | ... | 655.3 |
+# jina returns two layouts depending on render mode:
+# A) markdown pipes: | 11 Jan 2024 | 111.7 | ... | 655.3 |
+# B) tab-separated lines: "11 Jan 2024\t\n111.7\t\n227.0\t\n..."
 recs = {}
 for line in r.stdout.split("\n"):
     m = re.match(r"\|\s*(\d{2} \w{3} 20\d{2})\s*\|(.+)\|", line.strip())
@@ -33,6 +35,32 @@ for line in r.stdout.split("\n"):
     s12 = sum(x for x in vals[:12] if x is not None)
     if vals[12] is None or abs(s12 - vals[12]) <= 0.5:
         recs[m.group(1)] = vals
+
+if not recs:
+    # layout B: date line then value lines separated by \t
+    lines = r.stdout.split("\n")
+    i = 0
+    while i < len(lines):
+        l = lines[i].strip()
+        if re.fullmatch(r"\d{2} \w{3} 20\d{2}", l):
+            vals, j = [], i + 1
+            while j < len(lines) and len(vals) < 13:
+                s = lines[j].strip()
+                if s == "": j += 1; continue
+                if not re.fullmatch(r"\(?-?[\d,.]+\)?|-", s): break
+                if s == "-": vals.append(None)
+                else:
+                    neg = s.startswith("(")
+                    v = float(s.strip("()").replace(",",""))
+                    vals.append(-v if neg else v)
+                j += 1
+            if len(vals) == 13:
+                s12 = sum(x for x in vals[:12] if x is not None)
+                if vals[12] is None or abs(s12 - vals[12]) <= 0.5:
+                    recs[l] = vals
+            i = j
+        else:
+            i += 1
 
 if not recs:
     print("WARN: no rows parsed"); sys.exit(1)
