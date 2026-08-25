@@ -167,3 +167,10 @@ summary_md = "\n".join([
     "---", "Catatan: angka diperbarui otomatis oleh cron harian."])
 open(os.path.join(REPO, "ringkasan-90d-1y-all.md"), "w").write(summary_md)
 print("Summary refreshed.")
+
+# --- 5. regenerate web data for btc-etf-terminal (Vercel auto-deploys on push) ---
+wr = sh(["python3", "/root/datasets/build_web_flows.py"])
+print(wr.stdout.strip() or wr.stderr.strip())
+web = "/root/btc-etf-terminal"
+if os.path.isdir(web):
+    os.system(f'cd {web} && git add -A && git commit -m "Auto-update ETF flows — {datetime.datetime.utcnow().strftime("%Y-%m-%d")}" && git push origin main')
