@@ -66,9 +66,18 @@ if not recs:
     print("WARN: no rows parsed"); sys.exit(1)
 
 # --- 2. fetch candles (closed only) ---
-kr = sh(["curl","-s","--max-time","60",
-         "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=1000"])
-kdata = json.loads(kr.stdout)
+kr = None
+for _ in range(3):
+    kr = sh(["curl","-s","--max-time","60",
+             "https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=1000"])
+    try:
+        kdata = json.loads(kr.stdout)
+        if isinstance(kdata, list) and kdata:
+            break
+    except Exception:
+        pass
+else:
+    print("WARN: Binance klines fetch failed"); sys.exit(1)
 now_ms = datetime.datetime.utcnow().timestamp() * 1000
 candles = {}
 for k in kdata:
@@ -138,7 +147,8 @@ def summarize(sel, label):
     chg = (cw[-1]["close"] / cw[0]["open"] - 1) * 100 if cw else 0
     return ({"label": label, "trading_days": len(sel),
              "ibit_total_M": round(sum(ib), 1), "all_etf_total_M": round(sum(tot), 1),
-             "btc_change_pct": round(chg, 1), "btc_start": cw[0]["open"], "btc_end": cw[-1]["close"],
+             "btc_change_pct": round(chg, 1),
+             "btc_start": cw[0]["open"] if cw else None, "btc_end": cw[-1]["close"] if cw else None,
              "best_day": max(sel, key=lambda d: flows[d]["IBIT"] or -9e9),
              "worst_day": min(sel, key=lambda d: flows[d]["IBIT"] or 9e9)})
 

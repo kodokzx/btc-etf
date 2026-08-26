@@ -7,10 +7,10 @@
 - IBIT = iShares Bitcoin Trust (BlackRock) — kolom khusus IBIT tersedia per baris.
 
 ## Ringkasan
-- Hari data flow: 672
+- Hari data flow: 673
 - IBIT cumulative: **$62.64 miliar** (656 hari aktif)
 - Total semua ETF BTC cumulative: **$54.11 miliar**
-- BTC close awal periode: $46,339 → terakhir: $78,993 (+70.5%)
+- BTC close awal periode: $46,339 → terakhir: $78,539 (+69.5%)
 
 ## Data Harian
 
@@ -1650,3 +1650,5 @@
 | 20 Aug 2026 | 503.0 | 64.7 | 26.4 | 12.2 | 3.6 | 0.0 | 0.0 | -3.6 | 0.0 | 0.0 | 0.0 | 0.0 | 606.3 |
 | 21 Aug 2026 | 239.3 | 30.2 | 9.2 | 3.1 | 0.0 | 0.0 | 0.0 | 4.4 | 0.0 | 7.7 | 0.0 | 13.6 | 307.5 |
 | 24 Aug 2026 | 208.9 | 104.6 | 3.0 | 0.0 | 0.0 | 0.0 | 0.0 | 3.3 | 0.0 | 1.4 | 0.0 | 16.4 | 337.6 |
+| 25 Aug 2026 | - | 29.9 | 78,993 | 81,273 | 77,851 | 78,539 | 24,772.5 |
+| 25 Aug 2026 | - | 15.4 | 3.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 4.5 | 0.0 | 7.0 | 29.9 |
