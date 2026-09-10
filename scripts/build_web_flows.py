@@ -1,7 +1,7 @@
 import json, datetime
 
 # Read master dataset (672 days)
-master=json.load(open('/root/datasets/btc_etf_flow_dataset.json'))
+master=json.load(open('/root/btc-etf/btc_etf_flow_dataset.json'))
 flows=master['flows_usd_million']
 candles={c['date']:c for c in master['candles']}
 
