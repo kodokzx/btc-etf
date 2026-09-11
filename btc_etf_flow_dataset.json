@@ -4,7 +4,7 @@
   "source_candles": "Binance BTCUSDT 1d",
   "period_start": "2024-01-11",
   "IBIT_cumulative_MUSD": 62635.3,
-  "updated": "2026-09-10"
+  "updated": "2026-09-11"
  },
  "flows_usd_million": {
   "11 Jan 2024": {
@@ -10238,7 +10238,7 @@
    "Total": -46.6
   },
   "09 Sep 2026": {
-   "IBIT": null,
+   "IBIT": -19.5,
    "FBTC": 0.0,
    "BITB": 0.0,
    "ARKB": -78.0,
@@ -10250,7 +10250,22 @@
    "MSBT": 4.5,
    "GBTC": -27.2,
    "BTC": 0.0,
-   "Total": -100.7
+   "Total": -120.2
+  },
+  "10 Sep 2026": {
+   "IBIT": null,
+   "FBTC": -33.6,
+   "BITB": -12.6,
+   "ARKB": -164.3,
+   "BTCO": 0.0,
+   "EZBC": 0.0,
+   "BRRR": 0.0,
+   "HODL": -15.3,
+   "BTCW": 0.0,
+   "MSBT": 4.0,
+   "GBTC": -36.4,
+   "BTC": 0.0,
+   "Total": -258.2
   }
  },
  "candles": [
@@ -18357,6 +18372,14 @@
    "low": 77620.01,
    "close": 78455.8,
    "volume_btc": 19235.06605
+  },
+  {
+   "date": "2026-09-09",
+   "open": 78455.8,
+   "high": 79760.0,
+   "low": 77770.0,
+   "close": 78306.43,
+   "volume_btc": 14129.92027
   }
  ]
 }
